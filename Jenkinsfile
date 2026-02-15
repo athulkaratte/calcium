@@ -26,11 +26,11 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
+       stage('Build') {
+    steps {
+        sh 'NODE_OPTIONS=--max_old_space_size=4096 npm run build'
+    }
+}
 
         stage('Docker Build') {
             steps {
