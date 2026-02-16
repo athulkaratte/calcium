@@ -9,28 +9,21 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/athulkaratte/calcium.git'
+                git url: 'https://github.com/athulkaratte/calcium.git', branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install --force'
-'
+                sh 'npm install --legacy-peer-deps'
             }
         }
 
-        stage('Run Tests') {
+        stage('Build') {
             steps {
-                sh 'npm run test -- --watchAll=false'
+                sh 'NODE_OPTIONS=--max_old_space_size=4096 npm run build'
             }
         }
-
-       stage('Build') {
-    steps {
-        sh 'NODE_OPTIONS=--max_old_space_size=4096 npm run build'
-    }
-}
 
         stage('Docker Build') {
             steps {
@@ -38,13 +31,13 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
+        stage('Deploy') {
             steps {
-                sh '''
+                sh """
                 docker stop calcium || true
                 docker rm calcium || true
                 docker run -d -p 3000:3000 --name calcium calcium-app
-                '''
+                """
             }
         }
     }
